@@ -1,0 +1,8 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\Microsoft.Common.CurrentVersion.targets(5470,5): warning MSB3061: 无法删除文件“C:\Users\HP\source\repos\Detour Test 2\x64\Release\Detour Test 2.dll”。对路径“C:\Users\HP\source\repos\Detour Test 2\x64\Release\Detour Test 2.dll”的访问被拒绝。
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppClean.targets(77,5): warning : 对路径“c:\users\hp\source\repos\detour test 2\x64\release\detour test 2.dll”的访问被拒绝。
+  pch.cpp
+  dllmain.cpp
+C:\Users\HP\source\repos\Detour Test 2\dllmain.cpp(133,17): error C2065: “orinCreateProcessA”: 未声明的标识符
+C:\Users\HP\source\repos\Detour Test 2\dllmain.cpp(133,37): error C2065: “hCreateProcessA”: 未声明的标识符
+C:\Users\HP\source\repos\Detour Test 2\dllmain.cpp(134,17): error C2065: “orinCreateProcessW”: 未声明的标识符
+C:\Users\HP\source\repos\Detour Test 2\dllmain.cpp(134,37): error C2065: “hCreateProcessW”: 未声明的标识符
