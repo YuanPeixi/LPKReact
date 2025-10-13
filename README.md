@@ -1,3 +1,7 @@
+<head>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+
 # LPKReact
 LPK React Version
 ## Introduction
@@ -10,14 +14,14 @@ Windows 10 /Windows 11(Not tested Yet)
 (Actually it might works on earlier version of Windows)  
 
 ## Feature
-- __OpenProcesMonitor__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
+- __OpenProcesMonitor__ : <span style="color: green;"><i class="fas fa-check-circle"> OK</span>
 - __DescendantProcessHook__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
 - __ProcessStatics__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
 - __ProtectedPIDTable__ :<span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
 - __Injection__ :
-- - MessageHook : OK
-  - CreateRemoteThread : OK
-  - Registry : Pending
+- - MessageHook : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
+  - CreateRemoteThread : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
+  - Registry : <span style="color: orange;"><i class="fas fa-clock"></i> Pending</span>
 
 ## Usage
 - Rename Detour Test 2.dll into LPK64.dll   
