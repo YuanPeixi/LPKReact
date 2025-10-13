@@ -99,7 +99,7 @@ DLLEXP void RemoveProt(const DWORD val)
 {
 	size_t pos = FindProt(val);
 	if (pos != UINT_MAX)protPID[pos] = UINT_MAX;
-	--protPID[0];
+	if(protPID[0]>0)--protPID[0];
 }
 
 DLLEXP size_t CountProt()
@@ -122,19 +122,7 @@ HANDLE CALLBACK hOpenProcess(DWORD dwDesiredAccess, BOOL  bInheritHandle, DWORD 
 	else return orinOpenProcess(dwDesiredAccess, bInheritHandle, dwProcessId);
 }
 
-
-void Install()
-{
-	DetourTransactionBegin();
-	DetourAttach(&orinOpenProcess, hOpenProcess);
-	DetourTransactionCommit();
-	if (descendantMode) {
-		DetourTransactionBegin();
-		DetourAttach(&orinCreateProcessA, hCreateProcessA);
-		DetourAttach(&orinCreateProcessW, hCreateProcessW);
-		DetourTransactionCommit();
-	}
-}
+//Install() has been move to line 250
 
 
 void Remove()
@@ -212,7 +200,7 @@ BOOL WINAPI hCreateProcessW(
 	if (descendantMode)
 		return DetourCreateProcessWithDllExW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK.dll", orinCreateProcessW);
+			lpProcessInformation, "LPK64.dll", orinCreateProcessW);
 	else
 		return orinCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
@@ -250,11 +238,25 @@ BOOL WINAPI hCreateProcessA(
 	if (descendantMode)
 		return DetourCreateProcessWithDllExA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK.dll", orinCreateProcessA);
+			lpProcessInformation, "LPK64.dll", orinCreateProcessA);
 	else
 		return orinCreateProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
 			lpProcessInformation);
+}
+
+
+void Install()
+{
+	DetourTransactionBegin();
+	DetourAttach(&orinOpenProcess, hOpenProcess);
+	DetourTransactionCommit();
+	if (descendantMode) {
+		DetourTransactionBegin();
+		DetourAttach(&orinCreateProcessA, hCreateProcessA);
+		DetourAttach(&orinCreateProcessW, hCreateProcessW);
+		DetourTransactionCommit();
+	}
 }
 
 DLLEXP void EnableDescendant()//挂钩CreateProcess到WithDllEx
