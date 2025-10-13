@@ -42,3 +42,14 @@
 
 # visual intellisense
 *.ipch
+
+# Visual Studio cache/options directory
+.vs/
+
+#Logs and temp files
+*.tmp
+*.tlog
+*.VC.db
+
+#Private Key
+*.ppk
