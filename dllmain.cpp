@@ -12,7 +12,11 @@
 */
 #define PID_MAX 71680
 #pragma data_seg("LPKSharedMem")
-int flag = 0;//0 nothing 1 reflection install
+int flag = 0;//0 nothing 1 reflection install (Might disposed)
+
+volatile DWORD workerPID = 0; //0 needn't specific worker
+char DLLPath[1024]="LPK64.dll"; //To confuse DLL viewer use rundl 132/164
+
 HHOOK hHook = NULL;
 bool descendantMode = false;
 volatile BOOL onUinstall = FALSE;
@@ -100,6 +104,7 @@ DLLEXP void RemoveProt(const DWORD val)
 	size_t pos = FindProt(val);
 	if (pos != UINT_MAX)protPID[pos] = UINT_MAX;
 	if(protPID[0]>0)--protPID[0];
+	//Sometimes double remove occur, but I don't know why
 }
 
 DLLEXP size_t CountProt()
@@ -134,6 +139,13 @@ void Remove()
 
 LRESULT CALLBACK MsgHookProc(int code, WPARAM wParam, LPARAM lParam)
 {
+	if (workerPID) {//加入这段代码但是安全与否尚不明确
+		if (workerPID == GetCurrentProcessId()) {
+			UnhookWindowsHookEx(hHook);
+			InterlockedExchange(&workerPID, 0);
+			hHook = SetWindowsHookEx(WH_GETMESSAGE, MsgHookProc, g_hInstance, 0);
+		}
+	}
 	if (onUinstall)Remove();
 	return CallNextHookEx(hHook, code, wParam, lParam);
 }
@@ -196,11 +208,10 @@ BOOL WINAPI hCreateProcessW(
 	LPSTARTUPINFOW lpStartupInfo,
 	LPPROCESS_INFORMATION lpProcessInformation
 ) {
-	Beep(523, 100);
 	if (descendantMode)
 		return DetourCreateProcessWithDllExW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK64.dll", orinCreateProcessW);
+			lpProcessInformation, DLLPath, orinCreateProcessW);
 	else
 		return orinCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
@@ -234,11 +245,10 @@ BOOL WINAPI hCreateProcessA(
 	LPSTARTUPINFOA lpStartupInfo,
 	LPPROCESS_INFORMATION lpProcessInformation
 ) {
-	Beep(523, 100);
 	if (descendantMode)
 		return DetourCreateProcessWithDllExA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK64.dll", orinCreateProcessA);
+			lpProcessInformation, DLLPath, orinCreateProcessA);
 	else
 		return orinCreateProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
@@ -261,24 +271,11 @@ void Install()
 
 DLLEXP void EnableDescendant()//挂钩CreateProcess到WithDllEx
 {
-	/*
-	DetourTransactionBegin();
-	DetourAttach(&orinCreateProcessA, hCreateProcessA);
-	DetourAttach(&orinCreateProcessW, hCreateProcessW);
-	DetourTransactionCommit();
-	*/
 	descendantMode = true;
 }
 
 DLLEXP void DisableDescendant()
 {
-	/*
-	* 
-	DetourTransactionBegin();
-	DetourDetach(&orinCreateProcessA, hCreateProcessA);
-	DetourDetach(&orinCreateProcessW, hCreateProcessW);
-	DetourTransactionCommit();
-	*/
 	descendantMode = false;
 }
 
@@ -300,7 +297,39 @@ bool IsCurrentProcessExplorer()
     return false;
 }
 
+DLLEXP void SetDLLPathForce(const char path[])
+{
+	//TODO:Consider whether force update is necessary
+}
+
+DLLEXP void SetDLLPath(const char path[])
+{//NO ONLINE
+	if (CountInst() <= 1)
+		strcpy_s(DLLPath, path);
+	else
+		throw "Forbidden Dynamic Update";
+}
+
+DLLEXP void SetWorkProcess(DWORD pid)
+{//ONLINE
+	InterlockedExchange(&workerPID,pid);
+}
+
 void InjectProcess();
+
+/*
+TODO:
+添加状态量
+添加DLLPath 允许初始化者修改DLL路径（严禁动态修改）(通过Installed Process Statics Table检测)OK->Add SetDLLPath()
+允许指定WorkProcess OK->modify MsgHookProc(){AddTransfer} Add SetWorkProcess()
+SetWorkProcess() -> 在共享节里面修改workPID为目标 且 启用待转移旗帜 (flagTransfer)
+当目标MessageHookProc触发
+	检查当前PID
+	检查当前是否为flagTransfer
+	进行MessageHook交接
+对于WorkProcess不一定有OpenProcess保护
+但一定要有TerminateProcess和ExitProcess保护
+*/
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -311,6 +340,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
+		/*
+		这里的设计本意是 先Inject explorer.exe然后在dllmain中挂钩
+		但是该操作疑似是不安全的 即将移除
+		*/
 		if (IsCurrentProcessExplorer()&&flag==1) {
 			if(hHook==NULL)
 				InstallGlobal();
