@@ -12,7 +12,11 @@
 */
 #define PID_MAX 71680
 #pragma data_seg("LPKSharedMem")
-int flag = 0;//0 nothing 1 reflection install
+int flag = 0;//0 nothing 1 reflection install (Might disposed)
+
+volatile DWORD workerPID = 0; //0 needn't specific worker
+char DLLPath[1024]="LPK64.dll"; //To confuse DLL viewer use rundl 132/164
+
 HHOOK hHook = NULL;
 bool descendantMode = false;
 volatile BOOL onUinstall = FALSE;
@@ -135,6 +139,12 @@ void Remove()
 
 LRESULT CALLBACK MsgHookProc(int code, WPARAM wParam, LPARAM lParam)
 {
+	if (workerPID) {
+		if (workerPID == GetCurrentProcessId()) {
+			UnhookWindowsHookEx(hHook);
+			hHook = SetWindowsHookEx(WH_GETMESSAGE, MsgHookProc, g_hInstance, 0);
+		}
+	}
 	if (onUinstall)Remove();
 	return CallNextHookEx(hHook, code, wParam, lParam);
 }
@@ -197,11 +207,10 @@ BOOL WINAPI hCreateProcessW(
 	LPSTARTUPINFOW lpStartupInfo,
 	LPPROCESS_INFORMATION lpProcessInformation
 ) {
-	Beep(523, 100);
 	if (descendantMode)
 		return DetourCreateProcessWithDllExW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK64.dll", orinCreateProcessW);
+			lpProcessInformation, DLLPath, orinCreateProcessW);
 	else
 		return orinCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
@@ -238,7 +247,7 @@ BOOL WINAPI hCreateProcessA(
 	if (descendantMode)
 		return DetourCreateProcessWithDllExA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
-			lpProcessInformation, "LPK64.dll", orinCreateProcessA);
+			lpProcessInformation, DLLPath, orinCreateProcessA);
 	else
 		return orinCreateProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes,
 			lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo,
@@ -287,7 +296,39 @@ bool IsCurrentProcessExplorer()
     return false;
 }
 
+DLLEXP void SetDLLPathForce(const char path[])
+{
+	//TODO:Consider whether force update is necessary
+}
+
+DLLEXP void SetDLLPath(const char path[])
+{//NO ONLINE
+	if (CountInst() <= 1)
+		strcpy_s(DLLPath, path);
+	else
+		throw "Forbidden Dynamic Update";
+}
+
+DLLEXP void SetWorkProcess(DWORD pid)
+{//ONLINE
+	InterlockedExchange(&workerPID,pid);
+}
+
 void InjectProcess();
+
+/*
+TODO:
+添加状态量
+添加DLLPath 允许初始化者修改DLL路径（严禁动态修改）(通过Installed Process Statics Table检测)OK->Add SetDLLPath()
+允许指定WorkProcess OK->modify MsgHookProc(){AddTransfer} Add SetWorkProcess()
+SetWorkProcess() -> 在共享节里面修改workPID为目标 且 启用待转移旗帜 (flagTransfer)
+当目标MessageHookProc触发
+	检查当前PID
+	检查当前是否为flagTransfer
+	进行MessageHook交接
+对于WorkProcess不一定有OpenProcess保护
+但一定要有TerminateProcess和ExitProcess保护
+*/
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
