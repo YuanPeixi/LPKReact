@@ -139,9 +139,10 @@ void Remove()
 
 LRESULT CALLBACK MsgHookProc(int code, WPARAM wParam, LPARAM lParam)
 {
-	if (workerPID) {
+	if (workerPID) {//加入这段代码但是安全与否尚不明确
 		if (workerPID == GetCurrentProcessId()) {
 			UnhookWindowsHookEx(hHook);
+			InterlockedExchange(&workerPID, 0);
 			hHook = SetWindowsHookEx(WH_GETMESSAGE, MsgHookProc, g_hInstance, 0);
 		}
 	}
@@ -339,6 +340,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
+		/*
+		这里的设计本意是 先Inject explorer.exe然后在dllmain中挂钩
+		但是该操作疑似是不安全的 即将移除
+		*/
 		if (IsCurrentProcessExplorer()&&flag==1) {
 			if(hHook==NULL)
 				InstallGlobal();

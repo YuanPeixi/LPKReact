@@ -1,7 +1,7 @@
 ﻿  pch.cpp
   dllmain.cpp
-C:\Users\HP\source\repos\Detour Test 2 RC\dllmain.cpp(309,1): warning C4297: “SetDLLPath”: 假定函数不引发异常，但确实发生了
-C:\Users\HP\source\repos\Detour Test 2 RC\dllmain.cpp(309,1): message : 函数是 extern "C" 并且指定了 /EHc
+C:\Users\HP\source\repos\Detour Test 2 RC\dllmain.cpp(310,1): warning C4297: “SetDLLPath”: 假定函数不引发异常，但确实发生了
+C:\Users\HP\source\repos\Detour Test 2 RC\dllmain.cpp(310,1): message : 函数是 extern "C" 并且指定了 /EHc
     正在创建库 C:\Users\HP\source\repos\Detour Test 2 RC\x64\Release\Detour Test 2 RC.lib 和对象 C:\Users\HP\source\repos\Detour Test 2 RC\x64\Release\Detour Test 2 RC.exp
   正在生成代码
   Previous IPDB not found, fall back to full compilation.
