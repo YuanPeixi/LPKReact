@@ -159,13 +159,14 @@ int main()
     //if (!InitSimple("C:\\Windows\\System32\\LPK64.dll"))cerr << "Faile to load dll" << endl;
     if (!InitSimple("D:\\LPK64.dll"))cerr << "Failed to Load DLL" << endl;
     InstallGlobal();
-    SetDLLPath("D:\\LPK64.dll");
+    //SetDLLPath("D:\\LPK64.dll");
     DWORD pid;
     pid=(GetProcessIdByName(L"explorer.exe"));
     cout << "WorkPID="<<pid<<endl;
-    SetWorkProcess(pid);
+    //SetWorkProcess(pid);
+    EnableDescendant();
     //cin >> pid;
-    if (InjectDLL(pid, L"C:\\Windows\\System32\\LPK64.dll"))cout << "Inject Success" << endl;
+    //if (InjectDLL(pid, L"D:\\LPK64.dll"))cout << "Inject Success" << endl;
     while (true) {
         cout << "Installed Process Count=" << CountInst() << endl;
         cout << "Protected Process Count=" << CountProt() << endl;
