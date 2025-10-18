@@ -156,8 +156,10 @@ bool ExecuteRemotely(DWORD pid, const TCHAR* modulePath, const char* funcName) {
 
 int main()
 {
-    if (!InitSimple("C:\\Windows\\System32\\LPK64.dll"))cerr << "Faile to load dll" << endl;
+    //if (!InitSimple("C:\\Windows\\System32\\LPK64.dll"))cerr << "Faile to load dll" << endl;
+    if (!InitSimple("D:\\LPK64.dll"))cerr << "Failed to Load DLL" << endl;
     InstallGlobal();
+    SetDLLPath("D:\\LPK64.dll");
     DWORD pid;
     pid=(GetProcessIdByName(L"explorer.exe"));
     cout << "WorkPID="<<pid<<endl;

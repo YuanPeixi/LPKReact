@@ -1,0 +1,9 @@
+﻿  pch.cpp
+  dllmain.cpp
+C:\Users\袁沛希\source\repos\Detour Test 2 Github\LPKReact\dllmain.cpp(310,3): warning C4297: “SetDLLPath”: 假定函数不引发异常，但确实发生了
+  (编译源文件“/dllmain.cpp”)
+      C:\Users\袁沛希\source\repos\Detour Test 2 Github\LPKReact\dllmain.cpp(310,3):
+      函数是 extern "C" 并且指定了 /EHc
+  
+    正在创建库 C:\Users\袁沛希\source\repos\Detour Test 2 Github\LPKReact\x64\Debug\Detour Test 2 RC.lib 和对象 C:\Users\袁沛希\source\repos\Detour Test 2 Github\LPKReact\x64\Debug\Detour Test 2 RC.exp
+  Detour Test 2 RC.vcxproj -> C:\Users\袁沛希\source\repos\Detour Test 2 Github\LPKReact\x64\Debug\Detour Test 2 RC.dll
