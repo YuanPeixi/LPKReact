@@ -8,27 +8,41 @@ LPK React Version
 This is a branch version of LPK that turn Loop Detect into Inline hook.  
 LPK is a project that use to monitor or filter Win32 API calls
 
+## 📌To Do
+1. Complete All API
+   - CreateProcess (AsUser/WithToken...) (Maybe hook CreateProcessInternal) ⏳
+   - OpenProcess ✔
+   - CreateWindow ⏳
+   - Network ⏳ (By Windows Filtering Platform)
+   - FileAPIs ⏳⏳⏳ (Not soon)
+   - RegistryAPIs ⏳⏳⏳ (Not soon)
+   - DetectiveAPIs ⏳⏳⏳ (APIs use to check whether someone is hooked, Not soon)
+2. Develop A GUI
+   - MFC: Working on 🛠
+   - WFP (C#) :Planed
+
 ## Environment
 Test Environment Only  
 Windows 10 /Windows 11(Not tested Yet)  
 (Actually it might works on earlier version of Windows)  
 
-## Feature
-- __OpenProcesMonitor__ : <span style="color: green;"><i class="fas fa-check-circle"> OK</span>
-- __DescendantProcessHook__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
-- __ProcessStatics__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
-- __ProtectedPIDTable__ :<span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
+## 🚩Feature
+- __OpenProcesMonitor__ : <span style="color: green;"><i class="fas fa-check-circle"> OK</span>✔
+- __DescendantProcessHook__ : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>✔
+- __ProcessStatics__ 📊: <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>✔
+- __ProtectedPIDTable__ :<span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>✔
 - __Injection__ :
-- - MessageHook : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>
+- - MessageHook : <span style="color: green;"><i class="fas fa-check-circle"></i> OK</span>✔
   - (Additionally Now Message can delivery to target work process,such as explorer.exe, so that no reside process needed)<i class="fa-light fa-lightbulb"></i>
-  - CreateRemoteThread : <span style="color: green;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M320 576C178.6 576 64 461.4 64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576zM438 209.7C427.3 201.9 412.3 204.3 404.5 215L285.1 379.2L233 327.1C223.6 317.7 208.4 317.7 199.1 327.1C189.8 336.5 189.7 351.7 199.1 361L271.1 433C276.1 438 282.9 440.5 289.9 440C296.9 439.5 303.3 435.9 307.4 430.2L443.3 243.2C451.1 232.5 448.7 217.5 438 209.7z"/></svg> OK</span>
-  - Registry : <span style="color: orange;"><i class="fas fa-clock"></i> Pending</span>
+  - CreateRemoteThread : <span style="color: green;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M320 576C178.6 576 64 461.4 64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576zM438 209.7C427.3 201.9 412.3 204.3 404.5 215L285.1 379.2L233 327.1C223.6 317.7 208.4 317.7 199.1 327.1C189.8 336.5 189.7 351.7 199.1 361L271.1 433C276.1 438 282.9 440.5 289.9 440C296.9 439.5 303.3 435.9 307.4 430.2L443.3 243.2C451.1 232.5 448.7 217.5 438 209.7z"/></svg> OK</span>✔
+  - Registry : <span style="color: orange;"><i class="fas fa-clock"></i> Pending</span>⏳
 
 
 ## Usage
 - Rename Detour Test 2.dll into LPK64.dll   
 - Put LPK64.dll into %SystemRoot%\System32\  (For  refactor version, it doesn't strictly require this place)
 __Notice__ : You might need to use LoadLPK.h to write a program to adjust the config inside DLL and injects it
+__Notice__ : Actually you can use dllpath to adjust it instead of put into system32! ✨
 
 ## Notice
 This project is not releated to any projects that have similar names expcept my LPK
